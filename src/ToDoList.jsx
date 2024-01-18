@@ -1,30 +1,33 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 function ToDoList() {
 
-    const [tasks, setTasks] = useState([]);
+    const [tasks, setTasks] = useState(() => {
+        const storedTasks = localStorage.getItem("tasks");
+        return storedTasks ? JSON.parse(storedTasks) : [];
+    });
     const [newTask, setNewTask] = useState("");
 
-    function handleInputChange(event) {
+    useEffect(() => {
+        localStorage.setItem("tasks", JSON.stringify(tasks));
+    }, [tasks]);
+
+    const handleInputChange = (event) => {
         setNewTask(event.target.value);
     }
-
     function addTask() {
-
-        if (newTask.trim() !== ""){
-            setTasks(t => [...t, newTask]);
+        if (newTask.trim() !== "") {
+            const updatedTasks = [...tasks, newTask];
+            setTasks(updatedTasks);
             setNewTask("");
         }
-
     }
-
     function deleteTask(index) {
 
         const updatedTasks = tasks.filter((_, i) => i !== index);
         setTasks(updatedTasks);
 
     }
-
     function moveTaskUp(index) {
         if (index > 0){
             const updatedTasks = [...tasks];
@@ -33,7 +36,6 @@ function ToDoList() {
             setTasks(updatedTasks);
         }
     }
-
     function moveTaskDown(index) {
         if (index <  tasks.length - 1){
             const updatedTasks = [...tasks];
@@ -42,7 +44,6 @@ function ToDoList() {
             setTasks(updatedTasks);
         }
     }
-
     return (
         <>
             <div className="to-do-list">
